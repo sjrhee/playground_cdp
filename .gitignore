@@ -7,3 +7,4 @@ src/main/resources/crdp.properties
 tomcat_mysql_docker/target/
 logs/
 *.log
+*.csv
