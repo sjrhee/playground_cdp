@@ -11,7 +11,7 @@ services:
       MYSQL_PASSWORD: testpassword
     command: --local-infile=1 --secure-file-priv=/docker-entrypoint-initdb.d
     volumes:
-      - ./sample_data:/docker-entrypoint-initdb.d
+      - ../scripts/sample_data:/docker-entrypoint-initdb.d
     ports:
       - "3306:3306"
     networks:

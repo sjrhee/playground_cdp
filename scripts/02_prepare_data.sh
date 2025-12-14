@@ -4,7 +4,7 @@ set -e
 echo "Step 2: Prepare Data and SQL Scripts"
 
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SAMPLE_DATA_DIR="$BASE_DIR/tomcat_mysql_docker/sample_data"
+SAMPLE_DATA_DIR="$BASE_DIR/scripts/sample_data"
 
 # Ensure sample_data exists (it should be copied already or exist in structure)
 if [ ! -d "$SAMPLE_DATA_DIR" ]; then

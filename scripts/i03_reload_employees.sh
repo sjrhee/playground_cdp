@@ -7,7 +7,7 @@ MYSQL_USER="root"
 MYSQL_PASSWORD="rootpassword"
 MYSQL_DATABASE="mysql_employees"
 IMPORT_PATH_IN_CONTAINER="/docker-entrypoint-initdb.d/e01_employee_export.csv"
-LOCAL_INPUT_FILE="./e01_employee_export.csv"
+LOCAL_INPUT_FILE="./sample_data/e01_employee_export.csv"
 
 echo "Step 1: Checking for input file..."
 if [ ! -f "$LOCAL_INPUT_FILE" ]; then

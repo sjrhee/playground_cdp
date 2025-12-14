@@ -8,7 +8,7 @@ MYSQL_PASSWORD="rootpassword"
 MYSQL_DATABASE="mysql_employees"
 # Path defined in the SQL file (matches secure-file-priv)
 EXPORT_PATH_IN_CONTAINER="/docker-entrypoint-initdb.d/employee_export.csv"
-LOCAL_OUTPUT_FILE="./employee_export.csv"
+LOCAL_OUTPUT_FILE="./sample_data/employee_export.csv"
 SQL_SCRIPT="i01_export_employees.sql"
 
 # Get absolute path to the SQL script
