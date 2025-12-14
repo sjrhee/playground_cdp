@@ -2,6 +2,7 @@ package com.example;
 
 import com.centralmanagement.CentralManagementProvider;
 import com.centralmanagement.CipherTextData;
+import com.centralmanagement.ClientObserver;
 import com.centralmanagement.RegisterClientParameters;
 import com.centralmanagement.policy.CryptoManager;
 import java.io.FileInputStream;
@@ -80,8 +81,17 @@ public class CadpClient {
 
             RegisterClientParameters registerClientParams = builder.build();
 
+
             CentralManagementProvider centralManagementProvider = new CentralManagementProvider(registerClientParams);
             centralManagementProvider.addProvider();
+
+            // Status update implementation
+            centralManagementProvider.subscribeToStatusUpdate(new ClientObserver<Object, Object>() {
+                @Override
+                public void notifyStatusUpdate(Object status, Object message) {
+                    System.out.println("[CADP Status] Status: " + status + ", Message: " + message);
+                }
+            });
         } catch (Exception e) {
             System.err.println("Error registering client: " + e.getMessage());
             e.printStackTrace();
