@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: demo_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mysql_employees
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpassword
+    command: --local-infile=1 --secure-file-priv=/docker-entrypoint-initdb.d
+    volumes:
+      - ./sample_data:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    networks:
+      - demo-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  tomcat:
+    image: tomcat:9.0-jdk11
+    container_name: demo_tomcat
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./target/ROOT:/usr/local/tomcat/webapps/ROOT
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - demo-net
+
+networks:
+  demo-net:
+    driver: bridge
