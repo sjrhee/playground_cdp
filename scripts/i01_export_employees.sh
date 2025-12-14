@@ -9,23 +9,17 @@ MYSQL_DATABASE="mysql_employees"
 # Path defined in the SQL file (matches secure-file-priv)
 EXPORT_PATH_IN_CONTAINER="/docker-entrypoint-initdb.d/employee_export.csv"
 LOCAL_OUTPUT_FILE="./sample_data/employee_export.csv"
-SQL_SCRIPT="i01_export_employees.sql"
-
-# Get absolute path to the SQL script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SQL_FILE_PATH="$SCRIPT_DIR/$SQL_SCRIPT"
-
 echo "Step 1: Cleaning up existing export file in container..."
 docker exec $CONTAINER_NAME rm -f $EXPORT_PATH_IN_CONTAINER
 
-echo "Step 2: Executing Export SQL..."
-if [ ! -f "$SQL_FILE_PATH" ]; then
-    echo "Error: SQL file not found at $SQL_FILE_PATH"
-    exit 1
-fi
-
-# Use root user for FILE privilege
-cat "$SQL_FILE_PATH" | docker exec -i $CONTAINER_NAME mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE
+echo "Step 2: Executing Export SQL (Inline)..."
+# Execute SQL directly
+docker exec -i $CONTAINER_NAME mysql -u$MYSQL_USER -p$MYSQL_PASSWORD $MYSQL_DATABASE <<EOF
+SELECT * INTO OUTFILE '$EXPORT_PATH_IN_CONTAINER'
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+FROM employee;
+EOF
 
 echo "Step 3: Copying exported file to local host..."
 # Since /docker-entrypoint-initdb.d is mounted to host, we can just copy/move it from the mount point usually,
