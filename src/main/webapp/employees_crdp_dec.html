@@ -89,6 +89,10 @@
             let currentPage = 0;
             const pageSize = 100;
 
+            // Set Title for Decrypted View
+            const titleElement = document.querySelector('h1');
+            titleElement.textContent = 'Employees (CRDP Decrypted View)';
+
             function fetchEmployees(page) {
                 loadingDiv.style.display = 'block';
                 errorDiv.textContent = '';
@@ -96,6 +100,7 @@
                 prevBtn.disabled = true;
                 nextBtn.disabled = true;
 
+                // Call the CRDP Decrypted API
                 fetch(`api/employee/crdp-dec?page=${page}&size=${pageSize}`)
                     .then(response => {
                         if (!response.ok) {

@@ -45,13 +45,6 @@
         <scope>system</scope>
         <systemPath>${project.basedir}/src/main/lib/CADP_for_JAVA-8.18.1.000.jar</systemPath>
     </dependency>
-    <dependency>
-        <groupId>com.safeNet</groupId>
-        <artifactId>SafeNetVaultlessTokenization</artifactId>
-        <version>8.10.0.000</version>
-        <scope>system</scope>
-        <systemPath>${project.basedir}/src/main/lib/SafeNetVaultlessTokenization-8.10.0.000.jar</systemPath>
-    </dependency>
     <!-- Bouncy Castle -->
     <dependency>
         <groupId>org.bouncycastle</groupId>
