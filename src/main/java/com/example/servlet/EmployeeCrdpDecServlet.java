@@ -23,27 +23,12 @@ import java.util.List;
 @WebServlet("/api/employee/crdp-dec")
 public class EmployeeCrdpDecServlet extends HttpServlet {
 
-    // instance variable for CRDP client (reused)
-    private CrdpClient crdp;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-        try {
-            // CrdpClient loads config internally
-            this.crdp = CrdpClient.createFromProperties();
-            this.crdp.warmup();
-        } catch (Exception e) {
-            throw new ServletException("Failed to initialize CrdpClient: " + e.getMessage(), e);
-        }
-    }
-
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         // CRDP specific header
-        resp.setHeader("X-Crdp-Tls", String.valueOf(crdp.isUseTls()));
+        resp.setHeader(CrdpClient.HEADER_CRDP_TLS, String.valueOf(CrdpClient.getInstance().isUseTls()));
 
         List<Employee> employeeList = new ArrayList<>();
         String url = "jdbc:mysql://mysql:3306/mysql_employees?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
@@ -88,11 +73,11 @@ public class EmployeeCrdpDecServlet extends HttpServlet {
                     String gender = rs.getString("gender");
                     LocalDate hireDate = rs.getDate("date_of_hiring").toLocalDate();
 
-                    // Decrypt SSN using CRDP
+                    // Decrypt SSN using CRDP Singleton
                     String ssnRaw = rs.getString("ssn_no");
                     String ssn;
                     try {
-                        ssn = crdp.dec(ssnRaw);
+                        ssn = CrdpClient.getInstance().dec(ssnRaw);
                     } catch (Exception e) {
                         ssn = "Decryption Failed: " + ssnRaw;
                         e.printStackTrace();

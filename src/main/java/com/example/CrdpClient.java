@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -19,52 +18,46 @@ import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.Properties;
 import java.io.InputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 public class CrdpClient {
 
-    private final String baseUrl;
-    private final String policy;
-    private final String token;
-    private final String user;
-    private final boolean useTls;
+    public static final String HEADER_CRDP_TLS = "X-Crdp-Tls";
 
-    private final HttpClient httpClient;
+    private String baseUrl;
+    private String policy;
+    private String token;
+    private String user;
+    private boolean useTls;
+
+    private HttpClient httpClient;
     private final Gson gson;
 
     private static final int TIMEOUT = 10; // 10 seconds
 
-    /**
-     * 설정 파일에서 클라이언트 생성 (Factory Method)
-     * 
-     * @param filePath 설정 파일 경로 (예: "crdp.properties")
-     * @return 초기화된 CrdpClient 객체
-     * @throws IOException 설정 파일을 읽을 수 없거나 필수 항목이 누락된 경우
-     */
-    public static CrdpClient fromConfigFile(String filePath) throws IOException {
-        Properties config = new Properties();
-        try (FileInputStream fis = new FileInputStream(filePath)) {
-            config.load(fis);
+    private static volatile CrdpClient instance;
+
+    // Singleton getInstance
+    public static CrdpClient getInstance() {
+        if (instance == null) {
+            synchronized (CrdpClient.class) {
+                if (instance == null) {
+                    instance = new CrdpClient();
+                }
+            }
         }
-
-        String endpoint = config.getProperty("crdp_endpoint");
-        String policy = config.getProperty("crdp_policy");
-        String token = config.getProperty("crdp_jwt");
-        String user = config.getProperty("crdp_user");
-        boolean useTls = Boolean.parseBoolean(config.getProperty("crdp_tls", "true")); // Default to true if not specified
-
-        if (endpoint == null || policy == null || token == null || user == null) {
-            throw new IOException("설정 파일(" + filePath + ")에 필수 항목(crdp_endpoint, crdp_policy, crdp_jwt, crdp_user)이 누락되었습니다.");
-        }
-
-        return new CrdpClient(endpoint, policy, token, user, useTls);
+        return instance;
     }
 
     /**
-     * Factory method to create CrdpClient from crdp.properties
+     * Private Constructor for Singleton
+     * Loads configuration and initializes the client
      */
-    public static CrdpClient createFromProperties() {
+    private CrdpClient() {
+        this.gson = new Gson();
+        initialize();
+    }
+
+    private void initialize() {
         Properties props = new Properties();
         try (InputStream is = CrdpClient.class.getClassLoader().getResourceAsStream("crdp.properties")) {
             if (is == null) {
@@ -76,35 +69,17 @@ public class CrdpClient {
         }
 
         String endpoint = props.getProperty("crdp_endpoint");
-        boolean useTls = Boolean.parseBoolean(props.getProperty("crdp_tls", "true"));
-        String policy = props.getProperty("crdp_policy");
-        String user = props.getProperty("crdp_user_name");
-        String jwt = props.getProperty("crdp_jwt");
+        this.useTls = Boolean.parseBoolean(props.getProperty("crdp_tls", "true"));
+        this.policy = props.getProperty("crdp_policy");
+        this.user = props.getProperty("crdp_user_name");
+        this.token = props.getProperty("crdp_jwt");
 
-        if (endpoint == null || policy == null || jwt == null) {
+        if (endpoint == null || policy == null || token == null) {
             throw new RuntimeException("Missing required CRDP configuration in crdp.properties");
         }
 
-        return new CrdpClient(endpoint, policy, jwt, user, useTls);
-    }
-
-    /**
-     * 생성자
-     * 
-     * @param endpoint CRDP 서버 주소 (예: "192.168.0.1:443")
-     * @param policy   보호 정책 이름 (예: "P01")
-     * @param token    JWT 인증 토큰
-     * @param user     사용자 이름 (reveal 요청 시 필요)
-     * @param useTls   TLS 사용 여부
-     */
-    public CrdpClient(String endpoint, String policy, String token, String user, boolean useTls) {
-        this.useTls = useTls;
         String protocol = useTls ? "https" : "http";
         this.baseUrl = protocol + "://" + endpoint;
-        this.policy = policy;
-        this.token = token;
-        this.user = user;
-        this.gson = new Gson();
 
         try {
             // 시스템 속성으로 호스트네임 검증 비활성화 (JDK 11 HttpClient workaround)
@@ -121,6 +96,10 @@ public class CrdpClient {
                     .sslParameters(sslParams)
                     .connectTimeout(Duration.ofSeconds(TIMEOUT))
                     .build();
+
+            // Auto Warmup
+            warmup();
+
         } catch (Exception e) {
             throw new RuntimeException("HttpClient 초기화 실패", e);
         }

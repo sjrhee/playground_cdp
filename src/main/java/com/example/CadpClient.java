@@ -5,7 +5,7 @@ import com.centralmanagement.CipherTextData;
 import com.centralmanagement.ClientObserver;
 import com.centralmanagement.RegisterClientParameters;
 import com.centralmanagement.policy.CryptoManager;
-import java.io.FileInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -37,8 +37,8 @@ public class CadpClient {
     private void initialize() {
         Properties prop = loadProperties();
         if (prop == null) {
-             System.err.println("Failed to load cadp.properties");
-             return;
+            System.err.println("Failed to load cadp.properties");
+            return;
         }
         String keyManagerHost = prop.getProperty("keyManagerHost");
         String keyManagerPort = prop.getProperty("keyManagerPort");
@@ -81,7 +81,6 @@ public class CadpClient {
 
             RegisterClientParameters registerClientParams = builder.build();
 
-
             CentralManagementProvider centralManagementProvider = new CentralManagementProvider(registerClientParams);
             centralManagementProvider.addProvider();
 
@@ -103,7 +102,8 @@ public class CadpClient {
     }
 
     public String enc(String policyName, String plainText) {
-        if (plainText == null) return null;
+        if (plainText == null)
+            return null;
         try {
             CipherTextData cipherTextData = CryptoManager.protect(plainText.getBytes(StandardCharsets.UTF_8),
                     policyName);
@@ -119,7 +119,8 @@ public class CadpClient {
     }
 
     public String dec(String policyName, String cipherText) {
-        if (cipherText == null) return null;
+        if (cipherText == null)
+            return null;
         try {
             CipherTextData cipherTextData = new CipherTextData();
             cipherTextData.setCipherText(cipherText.getBytes(StandardCharsets.UTF_8));
