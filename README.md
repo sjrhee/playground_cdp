@@ -4,7 +4,7 @@
 
 ## 주요 기능 (Features)
 
-*   **직원 목록 조회**: 페이징 처리(100회)된 직원 목록 및 신상 정보 조회.
+*   **직원 목록 조회**: 페이징 처리(100회)된 직원 목록(약 30만 건) 및 신상 정보 조회.
 *   **원문 조회 (Original View)**: 데이터베이스에 암호화되어 저장된 상태 그대로의 SSN(주민등록번호) 확인.
 *   **CADP 복호화 (CADP Decrypted View)**: Thales CADP Java 라이브러리를 사용하여 애플리케이션 레벨에서 복호화된 SSN 확인.
 *   **CRDP 복호화 (CRDP Decrypted View)**: Thales CRDP REST API를 호출하여 컨테이너 환경에서 실시간으로 복호화된 SSN 확인.
