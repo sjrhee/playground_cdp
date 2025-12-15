@@ -39,11 +39,9 @@
 
     <!-- CADP Dependencies -->
     <dependency>
-        <groupId>com.thales.cadp</groupId>
+        <groupId>io.github.thalescpl-io.cadp</groupId>
         <artifactId>CADP_for_JAVA</artifactId>
         <version>8.18.1.000</version>
-        <scope>system</scope>
-        <systemPath>${project.basedir}/src/main/lib/CADP_for_JAVA-8.18.1.000.jar</systemPath>
     </dependency>
     <!-- Bouncy Castle -->
     <dependency>
