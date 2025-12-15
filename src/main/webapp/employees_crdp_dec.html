@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Employee List (CRDP)</title>
+    <title>Employee List</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,7 +48,7 @@
 
 <body>
 
-    <h1>Employees (CRDP Decrypted View)</h1>
+    <h1>Employees</h1>
     <p>Using <code>mysql_employees</code> database.</p>
 
     <div style="margin-bottom: 10px;">
@@ -89,7 +89,7 @@
             let currentPage = 0;
             const pageSize = 100;
 
-            // Set Title for Decrypted View
+            // Set Title for Encrypted View
             const titleElement = document.querySelector('h1');
             titleElement.textContent = 'Employees (CRDP Decrypted View)';
 
@@ -100,7 +100,7 @@
                 prevBtn.disabled = true;
                 nextBtn.disabled = true;
 
-                // Call the CRDP Decrypted API
+                // Call the CRDP API
                 fetch(`api/employee/crdp-dec?page=${page}&size=${pageSize}`)
                     .then(response => {
                         if (!response.ok) {
@@ -133,6 +133,8 @@
                 prevBtn.disabled = currentPage === 0;
 
                 // If less data than page size is returned, we are likely at the end
+                // Note: accurate "next" disabling requires knowing total count, 
+                // but for simple pagination, we can assume if dataLength < pageSize, no more next page.
                 nextBtn.disabled = dataLength < pageSize;
             }
 

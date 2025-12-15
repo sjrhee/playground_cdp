@@ -23,23 +23,16 @@ import java.util.List;
 @WebServlet("/api/employee/crdp-dec")
 public class EmployeeCrdpDecServlet extends HttpServlet {
 
-    // CRDP Configuration
-    // Loaded from src/main/resources/crdp.properties via CrdpClient
-    
+    // instance variable for CRDP client (reused)
     private CrdpClient crdp;
-    private Gson gson;
 
     @Override
     public void init() throws ServletException {
         super.init();
         try {
-            // CrdpClient가 스스로 속성을 로드하여 초기화
+            // CrdpClient loads config internally
             this.crdp = CrdpClient.createFromProperties();
             this.crdp.warmup();
-
-            this.gson = new GsonBuilder()
-                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-                    .create();
         } catch (Exception e) {
             throw new ServletException("Failed to initialize CrdpClient: " + e.getMessage(), e);
         }
@@ -49,11 +42,10 @@ public class EmployeeCrdpDecServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        // Add header to indicate TLS status (can be used by frontend)
+        // CRDP specific header
         resp.setHeader("X-Crdp-Tls", String.valueOf(crdp.isUseTls()));
 
         List<Employee> employeeList = new ArrayList<>();
-        // Use updated database name
         String url = "jdbc:mysql://mysql:3306/mysql_employees?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
         String dbUser = "testuser";
         String dbPassword = "testpassword";
@@ -96,15 +88,13 @@ public class EmployeeCrdpDecServlet extends HttpServlet {
                     String gender = rs.getString("gender");
                     LocalDate hireDate = rs.getDate("date_of_hiring").toLocalDate();
 
-                    // 복호화 수행 (CRDP reveal 호출)
-                    String encrypted = rs.getString("ssn_no");
+                    // Decrypt SSN using CRDP
+                    String ssnRaw = rs.getString("ssn_no");
                     String ssn;
                     try {
-                        // 복호화 수행 (reveal -> dec 변경)
-                        ssn = crdp.dec(encrypted);
+                        ssn = crdp.dec(ssnRaw);
                     } catch (Exception e) {
-                        ssn = "Decryption Failed: " + encrypted;
-                        // 로그를 남기는 것이 좋지만 여기선 스택트레이스 출력만
+                        ssn = "Decryption Failed: " + ssnRaw;
                         e.printStackTrace();
                     }
 
@@ -112,7 +102,9 @@ public class EmployeeCrdpDecServlet extends HttpServlet {
                 }
             }
 
-            // Gson 인스턴스 재사용 (init에서 초기화됨)
+            Gson gson = new GsonBuilder()
+                    .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                    .create();
 
             PrintWriter out = resp.getWriter();
             out.print(gson.toJson(employeeList));

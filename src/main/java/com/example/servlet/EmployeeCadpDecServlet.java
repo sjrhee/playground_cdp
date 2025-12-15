@@ -45,21 +45,24 @@ public class EmployeeCadpDecServlet extends HttpServlet {
         int size = 100;
         try {
             String pageParam = req.getParameter("page");
-            if (pageParam != null) page = Integer.parseInt(pageParam);
+            if (pageParam != null)
+                page = Integer.parseInt(pageParam);
             String sizeParam = req.getParameter("size");
-            if (sizeParam != null) size = Integer.parseInt(sizeParam);
-        } catch (NumberFormatException e) { }
+            if (sizeParam != null)
+                size = Integer.parseInt(sizeParam);
+        } catch (NumberFormatException e) {
+        }
 
         int offset = page * size;
         String sql = "SELECT emp_no, date_of_birth, first_name, last_name, gender, date_of_hiring, ssn_no FROM employee LIMIT ? OFFSET ?";
 
         try (Connection conn = DriverManager.getConnection(url, dbUser, dbPassword);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-             
-             stmt.setInt(1, size);
-             stmt.setInt(2, offset);
-             
-             try (ResultSet rs = stmt.executeQuery()) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, size);
+            stmt.setInt(2, offset);
+
+            try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     int empNo = rs.getInt("emp_no");
                     LocalDate birthDate = rs.getDate("date_of_birth").toLocalDate();
@@ -67,8 +70,8 @@ public class EmployeeCadpDecServlet extends HttpServlet {
                     String lastName = rs.getString("last_name");
                     String gender = rs.getString("gender");
                     LocalDate hireDate = rs.getDate("date_of_hiring").toLocalDate();
-                    
-                    // 복호화 수행 (dec() 호출)
+
+                    // Decrypt SSN using CADP
                     String ssnRaw = rs.getString("ssn_no");
                     String ssn;
                     try {
@@ -85,7 +88,7 @@ public class EmployeeCadpDecServlet extends HttpServlet {
             Gson gson = new GsonBuilder()
                     .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
                     .create();
-            
+
             PrintWriter out = resp.getWriter();
             out.print(gson.toJson(employeeList));
             out.flush();
@@ -106,8 +109,10 @@ public class EmployeeCadpDecServlet extends HttpServlet {
     private static class LocalDateAdapter extends TypeAdapter<LocalDate> {
         @Override
         public void write(JsonWriter jsonWriter, LocalDate localDate) throws IOException {
-            if (localDate == null) jsonWriter.nullValue();
-            else jsonWriter.value(localDate.toString());
+            if (localDate == null)
+                jsonWriter.nullValue();
+            else
+                jsonWriter.value(localDate.toString());
         }
 
         @Override

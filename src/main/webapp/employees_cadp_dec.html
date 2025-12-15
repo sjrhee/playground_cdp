@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Employee List (CADP)</title>
+    <title>Employee List</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,7 +48,7 @@
 
 <body>
 
-    <h1>Employees (CADP Decrypted View)</h1>
+    <h1>Employees</h1>
     <p>Using <code>mysql_employees</code> database.</p>
 
     <div style="margin-bottom: 10px;">
@@ -89,7 +89,7 @@
             let currentPage = 0;
             const pageSize = 100;
 
-            // Set Title for Decrypted View
+            // Set Title for Encrypted View
             const titleElement = document.querySelector('h1');
             titleElement.textContent = 'Employees (CADP Decrypted View)';
 
@@ -100,7 +100,7 @@
                 prevBtn.disabled = true;
                 nextBtn.disabled = true;
 
-                // Call the CADP Decrypted API
+                // Call the CADP API
                 fetch(`api/employee/cadp-dec?page=${page}&size=${pageSize}`)
                     .then(response => {
                         if (!response.ok) {
