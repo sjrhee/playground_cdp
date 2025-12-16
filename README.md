@@ -68,6 +68,8 @@ cd scripts
 1.  `mvn clean package`를 실행하여 `java-db-docker` 프로젝트 빌드.
 2.  빌드된 `ROOT.war` (또는 압축 해제된 폴더)를 `tomcat_mysql_docker/target/ROOT`로 배포.
 
+**참고**:  docker와 공유되는 ROOT 폴더의 권한을 미리 변경합니다. (sudo chown -R ubuntu:ubuntu ROOT)
+
 ### 3. 데이터 초기 암호화
 평문 데이터를 암호화하여 MySQL 데이터베이스에 저장합니다.
 ```bash
