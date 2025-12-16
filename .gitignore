@@ -8,3 +8,4 @@ tomcat_mysql_docker/target/
 logs/
 *.log
 *.csv
+k8s-migration/*.tar

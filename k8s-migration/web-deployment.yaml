@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: playground-web
+  labels:
+    app: playground-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playground-web
+  template:
+    metadata:
+      labels:
+        app: playground-web
+    spec:
+      containers:
+      - name: playground-web
+        image: docker.io/library/playground-web:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: playground-web-service
+spec:
+  selector:
+    app: playground-web
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer

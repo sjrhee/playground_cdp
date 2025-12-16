@@ -1,0 +1,8 @@
+tomcat_mysql_docker/
+.git/
+.idea/
+target/classes/
+target/generated-sources/
+target/maven-archiver/
+target/maven-status/
+# Keep target/ROOT.war but ignore others to minimize context if needed, but simplest is just ignore the heavy stuff
