@@ -34,7 +34,7 @@ CREATE TABLE `employee` (
   `date_of_hiring` date NOT NULL DEFAULT '1920-01-01',
   `date_of_termination` date NOT NULL DEFAULT '2222-01-01',
   `date_of_probation_end` date NOT NULL DEFAULT '1920-07-01',
-  `ssn_no` char(13) DEFAULT NULL,
+  `ssn_no` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`emp_no`)
 ) ENGINE=InnoDB AUTO_INCREMENT=500000 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

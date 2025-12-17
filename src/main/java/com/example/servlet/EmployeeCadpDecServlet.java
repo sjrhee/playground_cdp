@@ -25,11 +25,12 @@ public class EmployeeCadpDecServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
 
         List<Employee> employeeList = new ArrayList<>();
-        String url = "jdbc:mysql://mysql:3306/mysql_employees?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
+        String url = "jdbc:mysql://mysql:3306/mysql_employees?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8";
         String dbUser = "testuser";
         String dbPassword = "testpassword";
 
